@@ -7,20 +7,11 @@ import { authAPI } from "../lib/api";
 import { useAuth } from "../context/AuthContext";
 import { toastError } from "@/lib/api/toast";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
 import {
     Form,
     FormControl,
     FormField,
     FormItem,
-    FormLabel,
     FormMessage,
 } from "@/components/ui/form";
 import { z } from "zod";
@@ -28,6 +19,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { Eye, EyeOff } from "lucide-react";
+import { Card, CardTitle, CardDescription } from "@/addons/ui-core-addon/frontend/components/Card";
+import { FloatingInput } from "@/addons/ui-core-addon/frontend/components/FloatingInput";
 
 const loginSchema = z.object({
     email: z.string().email(),
@@ -36,11 +29,21 @@ const loginSchema = z.object({
 
 type LoginValues = z.infer<typeof loginSchema>;
 
-interface LoginFormProps {
-    redirectTo?: string;
+export interface LoginFormStyle {
+    card?: string;
+    title?: string;
+    description?: string;
+    input?: string;
+    forgotPassword?: string;
+    button?: string;
 }
 
-export function LoginForm({ redirectTo = "/" }: LoginFormProps) {
+interface LoginFormProps {
+    redirectTo?: string;
+    style?: LoginFormStyle;
+}
+
+export function LoginForm({ redirectTo = "/", style = {} }: LoginFormProps) {
     const t = useTranslations("Auth.Login");
     const router = useRouter();
     const { setUser } = useAuth();
@@ -67,88 +70,80 @@ export function LoginForm({ redirectTo = "/" }: LoginFormProps) {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-6">
-            <Card className="w-full max-w-md">
-                <CardHeader>
-                    <CardTitle className="text-2xl">{t("title")}</CardTitle>
-                    <CardDescription>{t("description")}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <Form {...form}>
-                        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-                            <FormField
-                                control={form.control}
-                                name="email"
-                                render={({ field, fieldState }) => (
-                                    <FormItem>
-                                        <FormLabel>{t("fields.email")}</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                type="email"
-                                                autoComplete="email"
-                                                aria-invalid={!!fieldState.error}
-                                                {...field}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+        <Card className={style.card ?? "w-full max-w-md border rounded-lg p-6 space-y-6"}>
+            <div className="space-y-1">
+                <CardTitle className={style.title}>{t("title")}</CardTitle>
+                <CardDescription className={style.description}>{t("description")}</CardDescription>
+            </div>
+            <Form {...form}>
+                <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+                    <FormField
+                        control={form.control}
+                        name="email"
+                        render={({ field, fieldState }) => (
+                            <FormItem>
+                                <FormControl>
+                                    <FloatingInput
+                                        label={t("fields.email")}
+                                        type="email"
+                                        autoComplete="email"
+                                        aria-invalid={!!fieldState.error}
+                                        className={style.input}
+                                        {...field}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
 
-                            <FormField
-                                control={form.control}
-                                name="password"
-                                render={({ field, fieldState }) => (
-                                    <FormItem>
-                                        <div className="flex items-center justify-between">
-                                            <FormLabel>{t("fields.password")}</FormLabel>
-                                            <Link
-                                                href="/forgot-password"
-                                                className="text-sm text-muted-foreground hover:text-foreground"
+                    <FormField
+                        control={form.control}
+                        name="password"
+                        render={({ field, fieldState }) => (
+                            <FormItem>
+                                <FormControl>
+                                    <FloatingInput
+                                        label={t("fields.password")}
+                                        type={showPassword ? "text" : "password"}
+                                        autoComplete="current-password"
+                                        aria-invalid={!!fieldState.error}
+                                        className={style.input}
+                                        containerClassName="w-full"
+                                        action={
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowPassword((v) => !v)}
+                                                aria-label={showPassword ? t("a11y.hidePassword") : t("a11y.showPassword")}
+                                                className="text-muted-foreground hover:text-foreground"
+                                                tabIndex={-1}
                                             >
-                                                {t("actions.forgotPassword")}
-                                            </Link>
-                                        </div>
-                                        <FormControl>
-                                            <div className="relative">
-                                                <Input
-                                                    type={showPassword ? "text" : "password"}
-                                                    autoComplete="current-password"
-                                                    aria-invalid={!!fieldState.error}
-                                                    {...field}
-                                                />
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setShowPassword((v) => !v)}
-                                                    aria-label={showPassword ? t("a11y.hidePassword") : t("a11y.showPassword")}
-                                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                                                    tabIndex={-1}
-                                                >
-                                                    {showPassword
-                                                        ? <EyeOff className="h-4 w-4" />
-                                                        : <Eye className="h-4 w-4" />
-                                                    }
-                                                </button>
-                                            </div>
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+                                                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                            </button>
+                                        }
+                                        {...field}
+                                    />
+                                </FormControl>
+                                <Link
+                                    href="/forgot-password"
+                                    className={style.forgotPassword ?? "text-sm text-muted-foreground hover:text-foreground"}
+                                >
+                                    {t("actions.forgotPassword")}
+                                </Link>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
 
-                            <Button
-                                type="submit"
-                                className="w-full"
-                                disabled={form.formState.isSubmitting}
-                            >
-                                {form.formState.isSubmitting
-                                    ? t("actions.submitting")
-                                    : t("actions.submit")}
-                            </Button>
-                        </form>
-                    </Form>
-                </CardContent>
-            </Card>
-        </div>
+                    <Button
+                        type="submit"
+                        className={style.button ?? "w-full"}
+                        disabled={form.formState.isSubmitting}
+                    >
+                        {form.formState.isSubmitting ? t("actions.submitting") : t("actions.submit")}
+                    </Button>
+                </form>
+            </Form>
+        </Card>
     );
 }
