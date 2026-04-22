@@ -109,7 +109,6 @@ export function LoginForm({ redirectTo = "/", style = {} }: LoginFormProps) {
                                         autoComplete="current-password"
                                         aria-invalid={!!fieldState.error}
                                         className={style.input}
-                                        containerClassName="w-full"
                                         action={
                                             <button
                                                 type="button"
