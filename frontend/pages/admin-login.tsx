@@ -1,4 +1,4 @@
-import { LoginFormStyled } from "@/addons/instances/auth-addon/frontend/LoginForm";
+import { LoginFormStyled } from "@/components/login/LoginForm";
 
 export default function AdminLoginPage() {
     return <LoginFormStyled redirectTo="/admin" />;
