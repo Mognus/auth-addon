@@ -19,8 +19,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { Eye, EyeOff } from "lucide-react";
-import { Card, CardTitle, CardDescription } from "@/addons/ui-core-addon/frontend/components/Card";
-import { FloatingInput } from "@/addons/ui-core-addon/frontend/components/FloatingInput";
+import { Card, CardTitle, CardDescription } from "@/addons/ui-core-addon/frontend/components/card";
+import { FloatingInput } from "@/addons/ui-core-addon/frontend/components/floating-input";
 
 const loginSchema = z.object({
     email: z.string().email(),
